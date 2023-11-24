@@ -1,12 +1,13 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e6e6e6;
+    background: linear-gradient(to bottom, #fff, #0084ff, #7affad, #ff0000); /* Gradient background from gold to light coral */
     margin: 0;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100vh;
+    transition: background 0.5s ease;
 }
 
 .container {
@@ -17,11 +18,15 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.5s ease;
 }
 
 h2 {
     color: #333;
 }
+
+/* ... (other styles remain unchanged) */
+
 
 form {
     display: flex;
@@ -67,6 +72,11 @@ li {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.3s ease; /* Add transition for smooth background color change */
+}
+
+li:hover {
+    background-color: #d3d3d3;
 }
 
 button.delete {
