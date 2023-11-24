@@ -77,3 +77,16 @@ function editAppointment(index, newName, newEmail, newPhone) {
     // Update the displayed appointments
     displayAppointments();
 }
+function deleteAppointment(index) {
+    var appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+
+    // Remove the appointment from the array
+    appointments.splice(index, 1);
+
+    // Update local storage
+    localStorage.setItem('appointments', JSON.stringify(appointments));
+
+    // Update the displayed appointments
+    displayAppointments();
+}
+
