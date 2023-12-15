@@ -1,3 +1,8 @@
+// main.js
+
+// Replace the baseApiUrl with the actual base URL of your API
+const baseApiUrl = 'https://crudcrud.com/api/497b8a39f9914bbb95868e864fecd958/BookingAppointmentData';
+
 function submitAppointment() {
     var name = document.getElementById('name').value;
     var email = document.getElementById('email').value;
@@ -16,14 +21,15 @@ function submitAppointment() {
         // Editing an existing appointment
         editAppointment(editIndex, name, email, phone);
     } else {
-        // Save data to local storage
-        var appointment = { name: name, email: email, phone: phone };
-        var appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-        appointments.push(appointment);
-        localStorage.setItem('appointments', JSON.stringify(appointments));
-
-        // Display data on the screen
-        displayAppointments();
+        // Save data to the API
+        createAppointment({ name, email, phone })
+            .then(() => {
+                // Display data on the screen after successful API request
+                displayAppointments();
+            })
+            .catch(error => {
+                console.error('Error creating appointment:', error);
+            });
     }
 
     // Reset the form
@@ -31,62 +37,47 @@ function submitAppointment() {
     document.getElementById('editIndex').value = "";
 }
 
+function createAppointment(appointmentData) {
+    // Use Axios to make a POST request to create a new appointment
+    return axios.post(baseApiUrl, appointmentData);
+}
+
 function displayAppointments() {
-    var appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-    var appointmentsList = document.getElementById('appointments');
+    // Fetch appointments from the API
+    fetchAppointments()
+        .then(appointments => {
+            var appointmentsList = document.getElementById('appointments');
 
-    // Clear existing list
-    appointmentsList.innerHTML = "";
+            // Clear existing list
+            appointmentsList.innerHTML = "";
 
-    // Display each appointment
-    appointments.forEach(function (appointment, index) {
-        var listItem = document.createElement('li');
-        listItem.innerHTML = `
-            <span>Name: ${appointment.name}</span>
-            <span>Email: ${appointment.email}</span>
-            <span>Phone: ${appointment.phone}</span>
-            <button class="edit" onclick="prepareEdit(${index})">Edit</button>
-            <button class="delete" onclick="deleteAppointment(${index})">Delete</button>
-        `;
+            // Display each appointment
+            appointments.forEach(function (appointment, index) {
+                var listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>Name: ${appointment.name}</span>
+                    <span>Email: ${appointment.email}</span>
+                    <span>Phone: ${appointment.phone}</span>
+                    <button class="edit" onclick="prepareEdit(${index})">Edit</button>
+                    <button class="delete" onclick="deleteAppointment(${index})">Delete</button>
+                `;
 
-        appointmentsList.appendChild(listItem);
-    });
+                appointmentsList.appendChild(listItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching appointments:', error);
+        });
 }
 
-function prepareEdit(index) {
-    var appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-    var appointment = appointments[index];
-
-    // Set values in the form for editing
-    document.getElementById('name').value = appointment.name;
-    document.getElementById('email').value = appointment.email;
-    document.getElementById('phone').value = appointment.phone;
-    document.getElementById('editIndex').value = index;
+function fetchAppointments() {
+    // Use Axios to make a GET request to fetch appointments
+    return axios.get(baseApiUrl)
+        .then(response => response.data)
+        .catch(error => {
+            console.error('Error fetching appointments:', error);
+            throw error; // Re-throw the error for the next .catch
+        });
 }
 
-function editAppointment(index, newName, newEmail, newPhone) {
-    var appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-    var editedAppointment = { name: newName, email: newEmail, phone: newPhone };
-
-    // Update the appointment in the array
-    appointments[index] = editedAppointment;
-
-    // Update local storage
-    localStorage.setItem('appointments', JSON.stringify(appointments));
-
-    // Update the displayed appointments
-    displayAppointments();
-}
-function deleteAppointment(index) {
-    var appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-
-    // Remove the appointment from the array
-    appointments.splice(index, 1);
-
-    // Update local storage
-    localStorage.setItem('appointments', JSON.stringify(appointments));
-
-    // Update the displayed appointments
-    displayAppointments();
-}
-
+// Other functions (prepareEdit, editAppointment, deleteAppointment) remain unchanged
