@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Appointment Booking</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-hvq5jC/7ExdsCYHvVl8p3Q66/85uvyMR3IpL6J3kr8eqR4PsBCBQp0tg8Cy6j3Xi+GGLZV8ZKOdvmLxYu3FVNA==" crossorigin="anonymous" />
 </head>
 <body>
 
@@ -31,17 +32,16 @@
 
         <!-- Display the list of users -->
         <ul id="userList"></ul>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+        <script src="main.js"></script>
+
+        <!-- Initialize UI on page load -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                initUI();
+            });
+        </script>
     </div>
-
-    <script src="main.js"></script>
-
-    <!-- Initialize UI on page load -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initUI();
-        });
-    </script>
 
 </body>
 </html>

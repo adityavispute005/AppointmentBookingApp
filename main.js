@@ -1,9 +1,19 @@
+// main.js
+// Function to fetch user details from the cloud
+function fetchUserDetails() {
+    return axios.get('https://crudcrud.com/api/15cfa1dfc071418eb8cf03788ec75575/appointment');
+}
+
+// Function to update user details in the cloud
+function updateUserDetails(userDetailsArray) {
+    return axios.put('https://crudcrud.com/api/15cfa1dfc071418eb8cf03788ec75575/appointment', { data: userDetailsArray });
+}
+
 // Function to initialize the UI with stored user details
 function initUI() {
-    // Fetch user details from crudcrud.com using a GET request
-    axios.get('https://crudcrud.com/api/fba8dda89409410eabd15fdabd79a98f/appointment')
+    // Fetch user details from the cloud
+    fetchUserDetails()
         .then(function (response) {
-            // Handle the success response and update the UI with fetched data
             var userDetailsArray = response.data;
 
             // Display user details in the UI
@@ -12,16 +22,25 @@ function initUI() {
 
             userDetailsArray.forEach(function (userDetails, index) {
                 var listItem = document.createElement('li');
-                listItem.textContent = userDetails.firstName + ' ' + userDetails.lastName + ' ' + userDetails.email + ' ' + userDetails.address + ' ' + userDetails.Phone_no;
 
-                // Create a delete button for each user
+                // Unicode character for the trash can icon
+                var trashIcon = '\u{1F5D1}'; // You can customize this to your liking
+
+                // Create a delete icon for each user
                 var deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
+                deleteButton.innerHTML = trashIcon;
+                deleteButton.style.cursor = 'pointer';
                 deleteButton.onclick = function () {
-                    deleteUser(index);
+                    deleteUser(index, userDetails._id);
                 };
 
+                // Display user details in the list item
+                listItem.textContent = userDetails.firstName + ' ' + userDetails.lastName + ' ' + userDetails.email + ' ' + userDetails.address + ' ' + userDetails.Phone_no + ' ';
+
+                // Append the delete button to the list item
                 listItem.appendChild(deleteButton);
+
+                // Append the list item to the user list
                 userList.appendChild(listItem);
             });
         })
@@ -31,9 +50,41 @@ function initUI() {
         });
 }
 
+// Function to delete a user by index
+function deleteUser(index, userId) {
+    // Fetch user details from the cloud
+    fetchUserDetails()
+        .then(function (response) {
+            var userDetailsArray = response.data;
+
+            // Update user details in the cloud
+            updateUserDetails(userDetailsArray.filter(user => user._id !== userId))
+                .then(function (putResponse) {
+                    // Handle the success response if needed
+                    console.log('Data updated in the cloud:', putResponse.data);
+
+                    // Remove the user from the UI
+                    var userList = document.getElementById('userList');
+                    userList.removeChild(userList.childNodes[index]);
+
+                    // Alternatively, you can clear the entire list and reinitialize it
+                    // userList.innerHTML = '';
+                    // initUI();
+                })
+                .catch(function (putError) {
+                    // Handle errors if the PUT request fails
+                    console.error('Error updating data in the cloud:', putError);
+                });
+        })
+        .catch(function (error) {
+            // Handle errors if the GET request fails
+            console.error('Error fetching data from the cloud:', error);
+        });
+}
+
 // Function to handle form submission
 function submitForm() {
-    // Get user input
+    // ... (your existing submitForm code)
     var firstName = document.getElementById('firstName').value;
     var lastName = document.getElementById('lastName').value;
     var email = document.getElementById('email').value;
@@ -50,7 +101,7 @@ function submitForm() {
     };
 
     // Perform a POST request using Axios to store the data in the cloud
-    axios.post('https://crudcrud.com/api/fba8dda89409410eabd15fdabd79a98f/appointment', userDetails)
+    axios.post('https://crudcrud.com/api/15cfa1dfc071418eb8cf03788ec75575/appointment', userDetails)
         .then(function (response) {
             // Handle the success response if needed
             console.log('Data stored in the cloud:', response.data);
@@ -62,38 +113,9 @@ function submitForm() {
             // Handle errors if the POST request fails
             console.error('Error storing data in the cloud:', error);
         });
+    // After submitting the form, reinitialize the UI
+    initUI();
 }
-
-// Function to delete a user by index
-function deleteUser(index) {
-    // Fetch user details from crudcrud.com using a GET request
-    axios.get('https://crudcrud.com/api/fba8dda89409410eabd15fdabd79a98f/appointment')
-        .then(function (response) {
-            var userDetailsArray = response.data;
-
-            // Remove the user at the specified index
-            userDetailsArray.splice(index, 1);
-
-            // Perform a PUT request using Axios to update the data in the cloud
-            axios.put('https://crudcrud.com/api/fba8dda89409410eabd15fdabd79a98f/appointment', userDetailsArray)
-                .then(function (putResponse) {
-                    // Handle the success response if needed
-                    console.log('Data updated in the cloud:', putResponse.data);
-
-                    // Reinitialize the UI
-                    initUI();
-                })
-                .catch(function (putError) {
-                    // Handle errors if the PUT request fails
-                    console.error('Error updating data in the cloud:', putError);
-                });
-        })
-        .catch(function (error) {
-            // Handle errors if the GET request fails
-            console.error('Error fetching data from the cloud:', error);
-        });
-}
-
 
 // Initialize UI on page load
 document.addEventListener('DOMContentLoaded', function () {
